@@ -1,0 +1,18 @@
+﻿<div class="jumbotron">
+  <h1>Успешно</h1>
+  <p>Поздравляем Вас! Вы успешно создали сообщение</p>
+  <p>Ваше сообщение : <%= @message.content %></p>
+  <p>Ссылка : ..</p>
+  <p><a class="btn btn-primary btn-lg" href="/" role="button">На главную</a></p>
+</div>
+
+<div class="jumbotron">
+  <h1>Все сообщения</h1>
+  <p>Кол-во: <%= @messages.count %></p>
+  <br />
+  <% @messages.each do |m| %>
+    <p><%= m.content %></p>
+  <% end %>
+  <br />
+  <p><a class="btn btn-primary btn-lg" href="/" role="button">На главную</a></p>
+</div>

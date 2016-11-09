@@ -1,0 +1,22 @@
+﻿<div class="jumbotron">
+  <h1>Создание сообщения</h1>
+  <p>Введите ваше сообщение и выберите способ уничтожения сообщения</p>
+
+  <form class="form-inline" action="/submit" method="POST">
+    <div class="form-group">
+      <label class="sr-only" for="exampleInputEmail3">Ваше сообщение</label>
+      <!-- <input type="textarea" name="model[message]" class="form-control" id="exampleInputEmail3" placeholder="сообщение..."> -->
+      <br /><br />
+      <input type="text" name="message[content]" value="Введите Ваше сообщение" class="form-control"/>
+    </div>
+    <br /><br />
+    <div class="checkbox">
+      <label>
+        <input type="checkbox"> Удалить сообщение спустя час
+      </label>
+    </div>
+    <br /><br />
+    <button type="submit" class="btn btn-default">Создать</button>
+  </form>
+
+</div>
