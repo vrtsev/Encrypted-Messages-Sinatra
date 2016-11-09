@@ -1,0 +1,12 @@
+﻿<div class="jumbotron">
+  <h1>Успешно</h1>
+  <p>Поздравляем Вас! Вы успешно создали сообщение</p>
+  <p>Ссылка : <a href='/messages/show/<%= @safe_link %>'>Перейти</a></p>
+  <% if @mode == 'after_visit' %>
+    <p>Тип удаления : будет удалено после первого прочтения</p>
+  <% else %>
+    <p>Тип удаления : будет удалено через <%= @usertime %> час(ов)</p>
+  <% end %>
+  <p><a class="btn btn-primary btn-lg" href="/" role="button">На главную</a></p>
+</div>
+

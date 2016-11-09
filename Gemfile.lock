@@ -14,6 +14,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    aes (0.5.0)
     arel (6.0.3)
     backports (3.6.7)
     bcrypt (3.1.10)
@@ -76,6 +77,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord (~> 4.1)
   activesupport (~> 4.1)
+  aes (~> 0.5.0)
   bcrypt
   faker
   hirb
@@ -88,4 +90,4 @@ DEPENDENCIES
   thin
 
 BUNDLED WITH
-   1.11.2
+   1.13.6

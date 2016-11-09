@@ -19,5 +19,6 @@ gem 'shotgun'
 
 gem 'faker'
 gem 'rspec'
-group :development, :test do
-end
+gem 'aes', '~> 0.5.0'
+# gem 'pry'
+
