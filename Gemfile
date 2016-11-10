@@ -20,5 +20,5 @@ gem 'shotgun'
 gem 'faker'
 gem 'rspec'
 gem 'aes', '~> 0.5.0'
-# gem 'pry'
+gem 'pry'
 

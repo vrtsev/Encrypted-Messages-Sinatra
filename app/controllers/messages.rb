@@ -1,4 +1,5 @@
 ﻿require 'aes'
+require 'pry'
 
 get '/messages/new' do
   @message = Message.new
@@ -10,6 +11,7 @@ post '/messages/create' do
   @message = Message.create(params[:message])
   @safe_link = AES.encrypt(@message.id.to_s, 'encrypt_link')
   @mode = params[:message]['mode']
+  @visits = params[:message]['visits']
   @usertime = params[:message]['time']
   erb :'messages/success'
 end
@@ -17,7 +19,8 @@ end
 get '/messages/show/:id' do
   @message = Message.find(AES.decrypt(params[:id], 'encrypt_link'))
   @usertime = @message.time.to_i
-  if (@message.mode == 'after_visit' && @message.status == 0) || (@message.mode == 'after_time' && Time.new < (@message.created_at + (@usertime*60))) #ВРЕМЯ : 1 МИНУТА
+  if (@message.mode == 'after_visit' && @message.visit_count < @message.visits) || (@message.mode == 'after_time' && Time.new < (@message.created_at + (@usertime*60))) #ВРЕМЯ : 1 МИНУТА
+    binding.pry
     erb :'messages/unlock'
   else
     erb :'errors/message_deleted'
@@ -28,8 +31,9 @@ post '/messages/show/:id' do
   begin
     @message = Message.find(AES.decrypt(params[:id], 'encrypt_link'))
     @content = AES.decrypt(@message.content, params[:password])
+    @visit_count = @message.visit_count
     if @message.mode == 'after_visit'
-      @message.update(status: 1)
+      @message.increment!(:visit_count)
     end
     erb :'messages/show'
   rescue OpenSSL::Cipher::CipherError
