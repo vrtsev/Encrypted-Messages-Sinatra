@@ -92,6 +92,12 @@ namespace :db do
     exec("createdb #{DB_NAME}")
   end
 
+  desc "Create the database for test env"
+  task :create_test do
+    puts "Creating database testasign_test if it doesn't exist..."
+    exec("createdb testasign_test")
+  end
+
   desc "Drop the database at #{DB_NAME}"
   task :drop do
     puts "Dropping database #{DB_NAME}..."

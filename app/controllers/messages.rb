@@ -1,5 +1,4 @@
 ﻿require 'aes'
-require 'pry'
 
 get '/messages/new' do
   @message = Message.new
@@ -16,20 +15,24 @@ post '/messages/create' do
   erb :'messages/success'
 end
 
-get '/messages/show/:id' do
-  @message = Message.find(AES.decrypt(params[:id], 'encrypt_link'))
-  @usertime = @message.time.to_i
-  if (@message.mode == 'after_visit' && @message.visit_count < @message.visits) || (@message.mode == 'after_time' && Time.new < (@message.created_at + (@usertime*60))) #ВРЕМЯ : 1 МИНУТА
-    binding.pry
-    erb :'messages/unlock'
-  else
-    erb :'errors/message_deleted'
+get '/messages/show/*' do
+  begin
+    @id = AES.decrypt(params['splat'][0], 'encrypt_link')
+    @message = Message.find(@id)
+    @usertime = @message.time.to_i
+    if (@message.mode == 'after_visit' && @message.visit_count < @message.visits) || (@message.mode == 'after_time' && Time.new < (@message.created_at + (@usertime*60))) #ВРЕМЯ : 1 МИНУТА
+      erb :'messages/unlock'
+    else
+      erb :'errors/message_deleted'
+    end
+  rescue
+    erb :'errors/message_invalid'
   end
 end
 
 post '/messages/show/:id' do
   begin
-    @message = Message.find(AES.decrypt(params[:id], 'encrypt_link'))
+    @message = Message.find(params[:id])
     @content = AES.decrypt(@message.content, params[:password])
     @visit_count = @message.visit_count
     if @message.mode == 'after_visit'
@@ -40,8 +43,3 @@ post '/messages/show/:id' do
     erb :'errors/message_show'
   end
 end
-
-# get '/messages/clear' do
-#   Message.delete_all
-#   redirect '/admin'
-# end

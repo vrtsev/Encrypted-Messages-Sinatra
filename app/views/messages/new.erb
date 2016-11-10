@@ -1,23 +1,16 @@
 ﻿<div class="jumbotron">
   <h1>Создание сообщения</h1>
   <p>Введите ваше сообщение и выберите способ уничтожения сообщения</p>
+  <p>Поддерживается только английский язык</p>
 
   <form class="form-inline" action="/messages/create" method="POST">
     <div class="form-group">
       <label class="sr-only" for="exampleInputEmail3">Ваше сообщение</label>
       <!-- <input type="textarea" name="model[message]" class="form-control" id="exampleInputEmail3" placeholder="сообщение..."> -->
       <br /><br />
-      <input type="text" name="message[content]" value="Введите Ваше сообщение" class="form-control"/>
+      <input type="text" name="message[content]" value="Ваше сообщение (поддерживается только английский)" class="form-control"/>
       <input type="text" name="password" value="Придумайте пароль" class="form-control"/>
     </div>
-    <br /><br />
-
-<!--     <div class="checkbox">
-      <label>
-        <input type="checkbox" name="type"> Удалить сообщение спустя час
-      </label>
-    </div> -->
-
     <br /><br />
     <div class="radio">
       <label>
