@@ -13,8 +13,8 @@ require 'sinatra'
 require 'sinatra/reloader' if development?
 require 'aes'
 require 'erb'
-require 'simplecov'
-SimpleCov.start
+require 'simplecov' if development? 
+SimpleCov.start if development?
 
 # Some helper constants for path-centric logic
 APP_ROOT = Pathname.new(File.expand_path('../../', __FILE__))

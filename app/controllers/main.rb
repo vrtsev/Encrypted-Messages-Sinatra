@@ -1,6 +1,4 @@
-﻿require 'pry'
-
-get '/' do
+﻿get '/' do
   erb :index
 end
 
