@@ -1,7 +1,8 @@
 ﻿<div class="jumbotron">
   <h1>Успешно</h1>
   <p>Поздравляем Вас! Вы успешно создали сообщение</p>
-  <p>Ссылка : <a href='/messages/show/<%= @safe_link %>'>Перейти</a></p>
+  <p>Ссылка : <b>safe-message.herokuapp.com/messages/show/<%= @safe_link %></b> </p>
+  <p><a href='/messages/show/<%= @safe_link %>'>Перейти по ссылке</a></p>
   <% if @mode == 'after_visit' %>
     <p>Тип удаления : будет удалено после <%= @visits %> визитов </p>
   <% else %>

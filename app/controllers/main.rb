@@ -1,4 +1,8 @@
-﻿require 'aes'
+﻿require 'pry'
+
+get '/' do
+  erb :index
+end
 
 get '/messages/new' do
   @message = Message.new
@@ -6,7 +10,8 @@ get '/messages/new' do
 end
 
 post '/messages/create' do
-  params[:message]['content'] = AES.encrypt(params[:message]['content'], params[:password])
+  params[:message]['content'] = AES.encrypt(params[:message]['content'],
+                                            params[:password])
   @message = Message.create(params[:message])
   @safe_link = AES.encrypt(@message.id.to_s, 'encrypt_link')
   @mode = params[:message]['mode']
@@ -20,12 +25,16 @@ get '/messages/show/*' do
     @id = AES.decrypt(params['splat'][0], 'encrypt_link')
     @message = Message.find(@id)
     @usertime = @message.time.to_i
-    if (@message.mode == 'after_visit' && @message.visit_count < @message.visits) || (@message.mode == 'after_time' && Time.new < (@message.created_at + (@usertime*60))) #ВРЕМЯ : 1 МИНУТА
+    if @message.mode == 'after_visit' && @message.visit_count < @message.visits
+      erb :'messages/unlock'
+    elsif @message.mode == 'after_time' && Time.new < (@message.created_at + (@usertime * 60))
       erb :'messages/unlock'
     else
+      status 204
       erb :'errors/message_deleted'
     end
   rescue
+    status 404
     erb :'errors/message_invalid'
   end
 end
@@ -35,11 +44,10 @@ post '/messages/show/:id' do
     @message = Message.find(params[:id])
     @content = AES.decrypt(@message.content, params[:password])
     @visit_count = @message.visit_count
-    if @message.mode == 'after_visit'
-      @message.increment!(:visit_count)
-    end
+    @message.increment!(:visit_count) if @message.mode == 'after_visit'
     erb :'messages/show'
   rescue OpenSSL::Cipher::CipherError
+    status 204
     erb :'errors/message_show'
   end
 end

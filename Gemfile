@@ -1,23 +1,26 @@
 ﻿source 'https://rubygems.org'
+ruby '2.3.0'
 
-# PostgreSQL driver
-gem 'pg'
-gem 'hirb'
-
-# Sinatra driver
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'thin'
-
-gem 'activesupport', "~>4.1"
-gem 'activerecord', "~>4.1"
-
 gem 'rake'
-gem 'bcrypt'
 
-gem 'shotgun'
+gem 'activesupport', '~>4.1'
+gem 'activerecord', '~>4.1'
 
-gem 'faker'
-gem 'rspec'
 gem 'aes', '~> 0.5.0'
 
+group :development do
+  gem 'pry'
+  gem 'rubocop'
+  gem 'shotgun'
+  gem 'rspec'
+  gem 'rack-test'
+  gem 'capybara'
+  gem 'simplecov'
+end
+
+group :production do
+  gem 'pg'
+end

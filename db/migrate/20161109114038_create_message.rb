@@ -1,4 +1,4 @@
-﻿class CreateMessage < ActiveRecord::Migration
+﻿class CreateMessage < ActiveRecord::Migration # :nodoc:
   def change
     create_table :messages do |t|
       t.string :content
@@ -9,4 +9,4 @@
       t.timestamps
     end
   end
-end 
+end

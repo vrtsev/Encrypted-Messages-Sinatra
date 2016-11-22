@@ -1,10 +1,3 @@
-﻿class Message < ActiveRecord::Base
-
+﻿class Message < ActiveRecord::Base # :nodoc:
   validates :content, presence: true
-
-  def ololo
-  end
-
 end
-
-

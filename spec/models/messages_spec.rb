@@ -1,8 +1,7 @@
 ﻿require 'spec_helper'
 
 RSpec.describe Message do
-
-  it "encrypt/decrypt content" do
+  it 'encrypt/decrypt content' do
     content = 'This is a message content example'
     password = '123456'
     # enc_content = AES.encrypt(content, password)
@@ -11,7 +10,7 @@ RSpec.describe Message do
     expect(@dec_content).to eq('This is a message content example')
   end
 
-  it "encrypt/decrypt id to safe links" do
+  it 'encrypt/decrypt id to safe links' do
     @message = Message.create(content: 'example content')
     @enc_id = AES.encrypt(@message.id.to_s, 'encrypt_link')
     @dec_id = AES.decrypt(@enc_id, 'encrypt_link')
