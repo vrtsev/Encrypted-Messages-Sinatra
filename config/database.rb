@@ -1,5 +1,4 @@
-﻿ActiveRecord::Base.logger = Logger.new(STDOUT) if Sinatra::Application.development?
-
+﻿# ActiveRecord::Base.logger = Logger.new(STDOUT) if Sinatra::Application.development?
 Dir[APP_ROOT.join('app', 'models', '*.rb')].each do |model_file|
   filename = File.basename(model_file).gsub('.rb', '')
   autoload ActiveSupport::Inflector.camelize(filename), model_file
@@ -16,7 +15,7 @@ ActiveRecord::Base.establish_connection(
   host:     db.host,
   port:     db.port,
   username: db.user,
-  password: db.password,
+  password: development? ? 'password' : db.password,
   database: DB_NAME,
   encoding: 'utf8'
 )

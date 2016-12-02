@@ -1,77 +1,163 @@
-﻿require 'spec_helper'
+require 'spec_helper'
 
-RSpec.describe 'MainController', type: :controller do
-  it 'loads homepage' do
-    get '/'
-    expect(last_response).to be_ok
+describe 'MainController', type: :controller do
+  let!(:message) { create :message, content: AES.encrypt('example content', 'safepassword') }
+  let(:encrypted_id) { AES.encrypt(message.id.to_s, 'encrypt_link') }
+  let(:last_message) { Message.last }
+
+  describe 'index action' do
+    it 'renders home page' do
+      get '/'
+      expect(last_response).to be_ok
+    end
   end
 
-  it 'has view-variable for message form' do
-    @message = Message.new
-    get '/messages/new'
-    expect(last_response).to be_ok
+  describe 'new action' do
+    it 'renders new message page' do
+      @message = message
+      get '/messages/new'
+      expect(last_response).to be_ok
+    end
   end
 
-  it 'creates a new message with visit-mode' do
-    post 'messages/create', 'message' => { 'content' => 'example', 'mode' => 'after_visit', 'visits' => '4', 'time' => '1'},
-                            'password' => '123'
-    expect(Message.last.visits).to eq(4)
-    expect(last_response).to be_ok
+  context 'when user send not-valid form' do
+    describe 'create action' do
+      it 'renders error page' do
+        post 'messages/create', 'message' => { 'content' => ''}
+        expect(last_response.status).to eq(500)
+      end
+    end
   end
 
-  it 'creates a new message with time-mode' do
-    post 'messages/create', 'message' => { 'content' => 'example', 'visits' => '1', 'mode' => 'after_time', 'time' => '4'},
-                            'password' => '123'
-    expect(Message.last.time).to eq(4)
-    expect(last_response).to be_ok
-  end
-end
+  context 'when user creates new message' do
+    let(:request) do
+      post 'messages/create', 'message' => { 'content' => 'example', 'mode' => 'after_time', 'visits' => '4', 'time' => '1'}, 'password' => '123'
+    end
 
-RSpec.describe 'MainController show action', type: :controller do
-  it 'renders unlock page when visit-mode and correct link' do
-    params = { 'content' => 'example', 'mode' => 'after_visit', 'visits' => '4', 'time' => '1'}
-    message = Message.create(params)
-    safe_link = AES.encrypt(message.id.to_s, 'encrypt_link')
-    get "messages/show/#{safe_link}"
-    expect(last_response.status).to eq(200)
+    let(:visit_request) do
+      post 'messages/create', 'message' => { 'content' => 'example', 'mode' => 'after_visit', 'visits' => '4', 'time' => '1'}, 'password' => '123'
+    end
+
+    describe 'create action' do
+      let(:encrypted_id) { AES.encrypt(last_message.id.to_s, 'encrypt_link') }
+
+      it 'saves to database' do
+        expect(message.id).to eq(last_message.id)
+      end
+
+      it 'renders correct link' do
+        request
+        get "/messages/unlock/#{encrypted_id}"
+        expect(last_response.body).to include('Введите пароль')
+      end
+    end
+
+    context 'when user choose time-mode' do
+      describe 'create action' do
+        it 'renders mode value' do
+          request
+          expect(last_response.body).to include("будет удалено после #{last_message.time} час(ов)")
+        end
+      end
+    end
+
+    context 'when user choose visit-mode' do
+      describe 'create action' do
+        it 'renders mode value' do
+          visit_request
+          expect(last_response.body).to include("будет удалено после #{last_message.visits} визитов")
+        end
+      end
+    end
+
+    describe 'create action' do
+      it 'encrypts message content' do
+        visit_request
+        expect(last_message.content).not_to eq('example')
+      end
+    end
   end
 
-  it 'renders unlock page when time-mode and correct link' do
-    params = { 'content' => 'example', 'mode' => 'after_time', 'visits' => '4', 'time' => '1'}
-    message = Message.create(params)
-    safe_link = AES.encrypt(message.id.to_s, 'encrypt_link')
-    get "messages/show/#{safe_link}"
-    expect(last_response.status).to eq(200)
+  describe 'unlock action' do
+    it 'decrypts message id' do
+      get "/messages/unlock/#{encrypted_id}"
+      expect(last_response.body).to include("сообщения №#{message.id}")
+    end
   end
 
-  it 'renders error page when message marked as deleted' do
-    params = { 'content' => 'example', 'mode' => 'after_visit', 'visits' => '1', 'time' => '1', 'visit_count' => '2'}
-    message = Message.create(params)
-    safe_link = AES.encrypt(message.id.to_s, 'encrypt_link')
-    2.times { get "messages/show/#{safe_link}" }
-    expect(last_response.status).to eq(204)
+  context 'when link is incorrect' do
+    let(:request) { get "/messages/unlock/something+#{encrypted_id}+something" }
+
+    describe 'show action' do
+      it 'returns 404 status code' do
+        request
+        expect(last_response.status).to eq(404)
+      end
+
+      it 'renders error page' do
+        request
+        expect(last_response.body).to include('Вы ввели неправильную ссылку')
+      end
+    end
   end
 
-  it 'renders error page while link is incorrect' do
-    get 'messages/show/imzeHdEE1l5T25ExYbbDkg==$yuNmvT5DYN+JIklehzd38w=='
-    expect(last_response.status).to eq(404)
-  end
-end
+  context 'when link is correct and' do
+    let(:request) { get "/messages/unlock/#{encrypted_id}" }
 
-RSpec.describe 'MainController show action with POST method', type: :controller do
-  it 'renders message' do
-    encrypted_message = AES.encrypt('example', 'safepassword')
-    params = { 'content' => encrypted_message, 'mode' => 'after_visit', 'visits' => '1', 'time' => '1', 'visit_count' => '0'}
-    message = Message.create(params)
-    post "messages/show/#{message.id}", 'password' => 'safepassword', 'splat' => [], 'captures' => ['472'], 'id' => '472'
-    expect(last_response.status).to eq(200)
+    context 'when message alive' do
+      describe 'unlock action' do
+        it 'renders unlock page' do
+          request
+          expect(last_response.body).to include('Введите пароль')
+        end
+      end
+    end
+
+    context 'when message marked as deleted' do
+      describe 'unlock action' do
+        let(:deleted_message) { create :message, visit_count: 4 }
+        let(:encrypted_id) { AES.encrypt(deleted_message.id.to_s, 'encrypt_link') }
+
+        it 'renders message_deleted page' do
+          request
+          expect(last_response.status).to eq(204)
+        end
+      end
+    end
   end
 
-  it 'renders error page when password is wrong' do
-    encrypted_message = AES.encrypt('example', 'okpassword')
-    params = { 'content' => encrypted_message, 'mode' => 'after_visit', 'visits' => '1', 'time' => '1', 'visit_count' => '0'}
-    message = Message.create(params)
-    post "messages/show/#{message.id}", 'password' => 'wrongpassword', 'splat' => [], 'captures' => ['472'], 'id' => '472'
-    expect(last_response.status).to eq(204)
+  context 'when user enter password and' do
+    let(:decrypted_id) { AES.decrypt(encrypted_id, 'encrypt_link') }
+
+    context 'when password is correct' do
+      let(:password) { 'safepassword' }
+      let(:decrypted_content) { AES.decrypt(message.content, password) }
+      let(:request) { post "/messages/show/#{decrypted_id}", 'password' => password }
+
+      describe 'show action' do
+        it 'renders decrypted message' do
+          request
+          expect(last_response.body).to include(decrypted_content)
+        end
+
+        it 'check that message has 1 visit' do
+          expect(last_message.visit_count).to eq(1)
+        end
+
+        it 'increments counter' do
+          request
+          expect(last_message.visit_count).to eq(2)
+        end
+      end
+    end
+
+    context 'when password is incorrect' do
+      describe 'unlock page' do
+        it 'returns 204 status code' do
+          post "/messages/show/#{decrypted_id}", 'password' => 'badpassword'
+          expect(last_response.status).to eq(204)
+        end
+      end
+    end
   end
 end

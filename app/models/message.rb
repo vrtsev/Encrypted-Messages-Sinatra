@@ -1,3 +1,3 @@
-﻿class Message < ActiveRecord::Base # :nodoc:
+﻿class Message < ActiveRecord::Base
   validates :content, presence: true
 end

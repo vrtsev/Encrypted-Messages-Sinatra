@@ -8,17 +8,22 @@ get '/messages/new' do
 end
 
 post '/messages/create' do
-  params[:message]['content'] = AES.encrypt(params[:message]['content'],
-                                            params[:password])
-  @message = Message.create(params[:message])
-  @safe_link = AES.encrypt(@message.id.to_s, 'encrypt_link')
-  @mode = params[:message]['mode']
-  @visits = params[:message]['visits']
-  @usertime = params[:message]['time']
-  erb :'messages/success'
+  begin
+    params[:message]['content'] = AES.encrypt(params[:message]['content'],
+                                              params[:password])
+    @message = Message.create(params[:message])
+    @safe_link = AES.encrypt(@message.id.to_s, 'encrypt_link')
+    @mode = params[:message]['mode']
+    @visits = params[:message]['visits']
+    @usertime = params[:message]['time']
+    erb :'messages/success'
+  rescue
+    status 500
+    erb :'errors/form_error'
+  end
 end
 
-get '/messages/show/*' do
+get '/messages/unlock/*' do
   begin
     @id = AES.decrypt(params['splat'][0], 'encrypt_link')
     @message = Message.find(@id)

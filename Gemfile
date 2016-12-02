@@ -19,6 +19,7 @@ group :development do
   gem 'rack-test'
   gem 'capybara'
   gem 'simplecov'
+  gem 'factory_girl'
 end
 
 group :production do

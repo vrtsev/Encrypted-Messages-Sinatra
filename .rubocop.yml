@@ -3,7 +3,7 @@ Style/BracesAroundHashParameters:
   EnforcedStyle: context_dependent
   
 Metrics/LineLength:
-  Max: 140
+  Max: 146
 
 AllCops:
   Include:
