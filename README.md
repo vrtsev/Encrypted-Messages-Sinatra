@@ -1,25 +1,23 @@
-﻿# SafeMessages on Sinatra
+# SafeMessages on Sinatra
 
-Сайт на heroku : https://safe-message.herokuapp.com/
+- Production: https://safe-message.herokuapp.com/
+- Ruby version: 2.3.0
+- Sinatra 1.4.7
+- Author : Vadim Ryazantsev (Junior Full-Stack RoR developer)
+- Email: v.rtsev@gmail.com
+- LinkedIn: https://www.linkedin.com/in/vrtsev
 
-Создавайте защишенные сообщения вместе с SafeMessage. Хотите отправить другому секретное сообщение или другую конфиденциальную информацию? Данный ресурс позволит Вам зашифровать секретное послание с помощью пароля и передать безопасную ссылку человеку, который должен получить данное послание. Воспользовавшись безопасной ссылкой и введя пароль, Вы сможете с легкостью просмотреть секретное послание.
+# Description
+Create encrypted messages with SafeMessage. Want to send a secret message or other confidential information to friend? This resource allows you to encrypt your messages with a password and send a secure link to the person who should receive this message. Using a secure link and entering your password, you can easily view the secret message.
 
-Ruby version: 2.3.0
+# Short functionality description:
+* Ability to set your own password to encrypt message
+* Ability to set self-destryction mode
+* Safe encrypted links
+* AES encrypting
 
-Sinatra 1.4.7
-
-# Краткое описание возможностей и функций:
-* Шифровка сообщения с помощью пароля
-* Возможность указать метод самоудаления сообщения
-* Возможность указать пользовательские значения для режимов самоудаления
-* Безопасные зашифрованные ссылки
-
-# Запуск приложения
-* Перейдите в консоли в папку с приложением
-* Создайте БД в postgres и выполните "rake db:create"
-* Проведите миграции в БД "rake db:migrate"
-* Введите в командной строке "shotgun" или "rackup"
-
-Автор : Vadim Ryazantsev
-
-linkedin.com/in/vrtsev
+# Installing and usage
+* Clone this repo
+* Create postgres database and run "rake db:create"
+* run "rake db:migrate"
+* run "shotgun" or "rackup"
